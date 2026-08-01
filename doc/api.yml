@@ -17,7 +17,30 @@ tags:
   - name: Reservations
 security:
   - x-user-header: []
-paths: {}
+paths:
+  /movies:
+    put:
+      tags: [Movies]
+      summary: Create or update a movie
+      description: MANAGER only. 403 for CLIENT and EMPLOYEE.
+      operationId: upsertMovie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieRequest'
+      responses:
+        '200':
+          description: Movie saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   securitySchemes:
     x-user-header:
