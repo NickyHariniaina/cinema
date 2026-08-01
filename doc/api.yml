@@ -118,6 +118,27 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /reservations/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ReservationId'
+    get:
+      tags: [Reservations]
+      summary: Get a reservation by id
+      description: |
+        200 if the CLIENT owns the reservation, or for MANAGER/EMPLOYEE.
+        403 if a CLIENT requests another CLIENT's reservation.
+      operationId: getReservationById
+      responses:
+        '200':
+          description: The reservation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   securitySchemes:
     x-user-header:
