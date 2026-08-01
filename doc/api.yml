@@ -1,0 +1,303 @@
+openapi: 3.0.3
+info:
+  title: Cinema API
+  description: |
+    Cinema management API.
+    Authentication: send the caller's user id in the `X-User` header. The server resolves
+    it to a User and enforces role-based authorization:
+      - CLIENT: can create/cancel own reservations
+      - EMPLOYEE: can list reservations, view any reservation, validate reservations
+      - MANAGER: everything EMPLOYEE can do, plus create/update movies and projections
+  version: 1.0.0
+servers:
+  - url: /
+tags:
+  - name: Movies
+  - name: Projections
+  - name: Reservations
+security:
+  - x-user-header: []
+paths:
+  /movies:
+    put:
+      tags: [Movies]
+      summary: Create or update a movie
+      description: MANAGER only. 403 for CLIENT and EMPLOYEE.
+      operationId: upsertMovie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieRequest'
+      responses:
+        '200':
+          description: Movie saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /projections:
+    put:
+      tags: [Projections]
+      summary: Create a projection
+      description: MANAGER only. 403 for CLIENT and EMPLOYEE.
+      operationId: createProjection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectionRequest'
+      responses:
+        '200':
+          description: Projection created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Projection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    get:
+      tags: [Projections]
+      summary: List projections
+      description: Accessible to everyone, no authentication required.
+      operationId: getProjections
+      security: []
+      responses:
+        '200':
+          description: List of projections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Projection'
+  /reservations:
+    get:
+      tags: [Reservations]
+      summary: List reservations
+      description: MANAGER and EMPLOYEE only. 403 for CLIENT.
+      operationId: getReservations
+      responses:
+        '200':
+          description: List of reservations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    put:
+      tags: [Reservations]
+      summary: Create a reservation
+      description: Any authenticated role. Created with status PENDING. Seats must be available.
+      operationId: createReservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReservationRequest'
+      responses:
+        '200':
+          description: Reservation created (status PENDING)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /reservations/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ReservationId'
+    get:
+      tags: [Reservations]
+      summary: Get a reservation by id
+      description: |
+        200 if the CLIENT owns the reservation, or for MANAGER/EMPLOYEE.
+        403 if a CLIENT requests another CLIENT's reservation.
+      operationId: getReservationById
+      responses:
+        '200':
+          description: The reservation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Reservations]
+      summary: Update a reservation
+      description: |
+        Owner CLIENT may set status to CANCELED.
+        EMPLOYEE and MANAGER may validate a reservation (set status to SUCCESS).
+      operationId: updateReservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReservationRequest'
+      responses:
+        '200':
+          description: Reservation updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    x-user-header:
+      type: apiKey
+      in: header
+      name: X-User
+      description: Id (UUID) of the authenticated user. Resolved to a User; roles drive authorization.
+  parameters:
+    ReservationId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    Forbidden:
+      description: Insufficient role or not the reservation owner
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Invalid payload or business rule violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+    Genre:
+      type: string
+      enum: [THRILLER, ROMANCE, COMEDY, DRAMA, ACTION, SCI-FI, FANTASY, ANIMATION]
+    ReservationStatus:
+      type: string
+      enum: [PENDING, SUCCESS, CANCELED]
+    UserRole:
+      type: string
+      enum: [CLIENT, EMPLOYEE, MANAGER]
+    User:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        firstName: { type: string }
+        lastName: { type: string }
+        birthdate: { type: string, format: date }
+        email: { type: string, format: email }
+        phone: { type: string }
+        role: { $ref: '#/components/schemas/UserRole' }
+    Room:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        number: { type: string }
+        capacity: { type: integer, format: int32 }
+    Seat:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        number: { type: string }
+        roomId: { type: string, format: uuid }
+    Movie:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        genres:
+          type: array
+          items: { $ref: '#/components/schemas/Genre' }
+        description: { type: string }
+        duration: { type: string, format: duration, example: PT1H45M }
+    MovieRequest:
+      type: object
+      required: [title, genres, description, duration]
+      properties:
+        title: { type: string }
+        genres:
+          type: array
+          items: { $ref: '#/components/schemas/Genre' }
+        description: { type: string }
+        duration: { type: string, format: duration, example: PT1H45M }
+    Projection:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        movie: { $ref: '#/components/schemas/Movie' }
+        room: { $ref: '#/components/schemas/Room' }
+        datetime: { type: string, format: date-time }
+        seatPrice: { type: number, format: double, description: BigDecimal }
+    ProjectionRequest:
+      type: object
+      required: [movieId, roomId, datetime, seatPrice]
+      properties:
+        movieId: { type: string, format: uuid }
+        roomId: { type: string, format: uuid }
+        datetime: { type: string, format: date-time }
+        seatPrice: { type: number, format: double, description: BigDecimal }
+    CreateReservationRequest:
+      type: object
+      required: [projectionId, seatIds]
+      properties:
+        projectionId: { type: string, format: uuid }
+        seatIds:
+          type: array
+          minItems: 1
+          items: { type: string, format: uuid }
+    UpdateReservationRequest:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/ReservationStatus' }
+    Reservation:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        createdAt: { type: string, format: date-time }
+        status: { $ref: '#/components/schemas/ReservationStatus' }
+        client: { $ref: '#/components/schemas/User' }
+        projection: { $ref: '#/components/schemas/Projection' }
+        seats:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Seat' }
