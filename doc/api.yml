@@ -96,6 +96,28 @@ paths:
                   $ref: '#/components/schemas/Reservation'
         '403':
           $ref: '#/components/responses/Forbidden'
+    put:
+      tags: [Reservations]
+      summary: Create a reservation
+      description: Any authenticated role. Created with status PENDING. Seats must be available.
+      operationId: createReservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReservationRequest'
+      responses:
+        '200':
+          description: Reservation created (status PENDING)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   securitySchemes:
     x-user-header:
