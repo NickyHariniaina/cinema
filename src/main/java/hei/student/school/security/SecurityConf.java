@@ -1,5 +1,6 @@
 package hei.student.school.security;
 
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import hei.student.school.security.exception.RestAccessDeniedHandler;
@@ -41,6 +42,10 @@ public class SecurityConf {
                     .anonymous()
                     .requestMatchers("/movies", "/movies/**")
                     .hasRole("MANAGER")
+                .requestMatchers(GET, "/reservations")
+                    .hasAnyRole("MANAGER", "EMPLOYEE")
+                .requestMatchers(GET, "/reservations/**")
+                    .authenticated()
                     .anyRequest()
                     .permitAll())
         .addFilterBefore(bearerAuthFilter, UsernamePasswordAuthenticationFilter.class)
