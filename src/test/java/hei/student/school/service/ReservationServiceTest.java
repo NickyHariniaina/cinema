@@ -76,8 +76,8 @@ class ReservationServiceTest {
     var client = new JUser();
     client.setId(clientId);
     var projection = new JProjection();
-    var seat1 = new JSeat();
-    var seat2 = new JSeat();
+    var seat1 = seat();
+    var seat2 = seat();
     var request =
         new CreateReservationRequest(PROJECTION_ID, List.of(seat1.getId(), seat2.getId()));
     var saved = new JReservation();
@@ -138,7 +138,7 @@ class ReservationServiceTest {
     var clientId = authenticateAs(UserRole.CLIENT);
     var client = new JUser();
     client.setId(clientId);
-    var takenSeat = new JSeat();
+    var takenSeat = seat();
     var request = new CreateReservationRequest(PROJECTION_ID, List.of(takenSeat.getId()));
     var existing = new JReservation();
     existing.setStatus(ReservationStatus.SUCCESS);
@@ -158,7 +158,7 @@ class ReservationServiceTest {
     var clientId = authenticateAs(UserRole.CLIENT);
     var client = new JUser();
     client.setId(clientId);
-    var seat = new JSeat();
+    var seat = seat();
     var request = new CreateReservationRequest(PROJECTION_ID, List.of(seat.getId()));
     var canceled = new JReservation();
     canceled.setStatus(ReservationStatus.CANCELED);
@@ -268,6 +268,12 @@ class ReservationServiceTest {
     reservation.setId(ID);
     reservation.setClient(client);
     return reservation;
+  }
+
+  private static JSeat seat() {
+    var seat = new JSeat();
+    seat.setId(UUID.randomUUID());
+    return seat;
   }
 
   private static UUID authenticateAs(UserRole role) {
