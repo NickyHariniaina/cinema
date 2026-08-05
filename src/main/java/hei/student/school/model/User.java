@@ -1,5 +1,6 @@
 package hei.student.school.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class User {
   private String lastName;
   private LocalDate birthdate;
   private String email;
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
   private String phone;
   private UserRole role;
