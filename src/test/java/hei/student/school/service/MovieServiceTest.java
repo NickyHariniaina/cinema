@@ -61,9 +61,11 @@ class MovieServiceTest {
 
   @Test
   void save_creates_new_movie_when_title_does_not_exist() {
-    var request = new MovieRequest("Dune", Set.of(Genre.SCI_FI), "Desert planet", Duration.ofHours(2));
+    var request =
+        new MovieRequest("Dune", Set.of(Genre.SCI_FI), "Desert planet", Duration.ofHours(2));
     when(jMovieRepository.findByTitle("Dune")).thenReturn(Optional.empty());
-    var entityToSave = new JMovie(null, "Dune", Set.of(Genre.SCI_FI), "Desert planet", Duration.ofHours(2));
+    var entityToSave =
+        new JMovie(null, "Dune", Set.of(Genre.SCI_FI), "Desert planet", Duration.ofHours(2));
     var saved = jMovie("Dune", Set.of(Genre.SCI_FI), Duration.ofHours(2));
     saved.setDescription("Desert planet");
     var savedDomain = domainOf(saved);
@@ -84,10 +86,24 @@ class MovieServiceTest {
   void save_updates_existing_movie_when_title_exists() {
     var existing = jMovie("Dune", Set.of(Genre.SCI_FI), Duration.ofHours(2));
     existing.setDescription("Old synopsis");
-    var request = new MovieRequest("Dune", Set.of(Genre.SCI_FI, Genre.DRAMA), "New synopsis", Duration.ofHours(3));
+    var request =
+        new MovieRequest(
+            "Dune", Set.of(Genre.SCI_FI, Genre.DRAMA), "New synopsis", Duration.ofHours(3));
     when(jMovieRepository.findByTitle("Dune")).thenReturn(Optional.of(existing));
-    var entityToSave = new JMovie(existing.getId(), "Dune", Set.of(Genre.SCI_FI, Genre.DRAMA), "New synopsis", Duration.ofHours(3));
-    var saved = new JMovie(existing.getId(), "Dune", Set.of(Genre.SCI_FI, Genre.DRAMA), "New synopsis", Duration.ofHours(3));
+    var entityToSave =
+        new JMovie(
+            existing.getId(),
+            "Dune",
+            Set.of(Genre.SCI_FI, Genre.DRAMA),
+            "New synopsis",
+            Duration.ofHours(3));
+    var saved =
+        new JMovie(
+            existing.getId(),
+            "Dune",
+            Set.of(Genre.SCI_FI, Genre.DRAMA),
+            "New synopsis",
+            Duration.ofHours(3));
     var savedDomain = domainOf(saved);
     when(jMovieMapper.toEntity(any())).thenReturn(entityToSave);
     when(jMovieRepository.save(entityToSave)).thenReturn(saved);

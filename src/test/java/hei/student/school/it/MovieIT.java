@@ -78,13 +78,15 @@ class MovieIT extends FacadeIT {
     var first =
         putForObject(
             MOVIES_URL,
-            new MovieRequest("Dune", Set.of(Genre.SCI_FI), "Desert planet", Duration.ofHours(2).plusMinutes(35)),
+            new MovieRequest(
+                "Dune", Set.of(Genre.SCI_FI), "Desert planet", Duration.ofHours(2).plusMinutes(35)),
             Movie.class);
 
     var updated =
         putForObject(
             MOVIES_URL,
-            new MovieRequest("Dune", Set.of(Genre.SCI_FI, Genre.DRAMA), "Updated synopsis", Duration.ofHours(3)),
+            new MovieRequest(
+                "Dune", Set.of(Genre.SCI_FI, Genre.DRAMA), "Updated synopsis", Duration.ofHours(3)),
             Movie.class);
 
     assertEquals(first.getId(), updated.getId());
@@ -98,7 +100,10 @@ class MovieIT extends FacadeIT {
   void get_movies_returns_empty_list_when_none() {
     var response =
         testRestTemplate.exchange(
-            MOVIES_URL, GET, new HttpEntity<>(managerHeaders), new ParameterizedTypeReference<List<Movie>>() {});
+            MOVIES_URL,
+            GET,
+            new HttpEntity<>(managerHeaders),
+            new ParameterizedTypeReference<List<Movie>>() {});
 
     assertEquals(OK, response.getStatusCode());
     assertEquals(List.of(), response.getBody());
@@ -114,12 +119,19 @@ class MovieIT extends FacadeIT {
     var titanic =
         putForObject(
             MOVIES_URL,
-            new MovieRequest("Titanic", Set.of(Genre.DRAMA), "A ship sinks", Duration.ofHours(3).plusMinutes(14)),
+            new MovieRequest(
+                "Titanic",
+                Set.of(Genre.DRAMA),
+                "A ship sinks",
+                Duration.ofHours(3).plusMinutes(14)),
             Movie.class);
 
     var response =
         testRestTemplate.exchange(
-            MOVIES_URL, GET, new HttpEntity<>(managerHeaders), new ParameterizedTypeReference<List<Movie>>() {});
+            MOVIES_URL,
+            GET,
+            new HttpEntity<>(managerHeaders),
+            new ParameterizedTypeReference<List<Movie>>() {});
 
     assertEquals(OK, response.getStatusCode());
     var movies = response.getBody();
@@ -144,7 +156,8 @@ class MovieIT extends FacadeIT {
   @Test
   void put_movies_rejects_missing_fields() {
     var response =
-        testRestTemplate.exchange(MOVIES_URL, PUT, new HttpEntity<>(Map.of(), managerHeaders), Map.class);
+        testRestTemplate.exchange(
+            MOVIES_URL, PUT, new HttpEntity<>(Map.of(), managerHeaders), Map.class);
 
     assertEquals(BAD_REQUEST, response.getStatusCode());
     assertEquals(
@@ -155,13 +168,16 @@ class MovieIT extends FacadeIT {
   @Test
   void put_movies_is_forbidden_for_client_and_employee() {
     var clientHeaders = authHeaders(seedUser("client@cinema.test", UserRole.CLIENT).getToken());
-    var employeeHeaders = authHeaders(seedUser("employee@cinema.test", UserRole.EMPLOYEE).getToken());
+    var employeeHeaders =
+        authHeaders(seedUser("employee@cinema.test", UserRole.EMPLOYEE).getToken());
     var request = new MovieRequest("Dune", Set.of(Genre.SCI_FI), "x", Duration.ofHours(2));
 
     var clientResponse =
-        testRestTemplate.exchange(MOVIES_URL, PUT, new HttpEntity<>(request, clientHeaders), Map.class);
+        testRestTemplate.exchange(
+            MOVIES_URL, PUT, new HttpEntity<>(request, clientHeaders), Map.class);
     var employeeResponse =
-        testRestTemplate.exchange(MOVIES_URL, PUT, new HttpEntity<>(request, employeeHeaders), Map.class);
+        testRestTemplate.exchange(
+            MOVIES_URL, PUT, new HttpEntity<>(request, employeeHeaders), Map.class);
 
     assertEquals(FORBIDDEN, clientResponse.getStatusCode());
     assertEquals(FORBIDDEN, employeeResponse.getStatusCode());
@@ -172,7 +188,8 @@ class MovieIT extends FacadeIT {
   @Test
   void put_movies_returns_401_when_unauthenticated() {
     var response =
-        testRestTemplate.exchange(MOVIES_URL, PUT, new HttpEntity<>(Map.of(), jsonHeaders()), Map.class);
+        testRestTemplate.exchange(
+            MOVIES_URL, PUT, new HttpEntity<>(Map.of(), jsonHeaders()), Map.class);
 
     assertEquals(UNAUTHORIZED, response.getStatusCode());
     assertEquals("401 UNAUTHORIZED", response.getBody().get("type"));
