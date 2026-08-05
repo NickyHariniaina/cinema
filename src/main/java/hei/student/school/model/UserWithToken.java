@@ -1,11 +1,14 @@
 package hei.student.school.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 public class UserWithToken extends User {
   @Getter private final String token;
 
-  public UserWithToken(String token) {
+  @JsonCreator
+  public UserWithToken(@JsonProperty("token") String token) {
     this.token = token;
   }
 
