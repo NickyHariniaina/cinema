@@ -6,6 +6,7 @@ import hei.student.school.repository.mapper.JProjectionMapper;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -13,6 +14,7 @@ public class ProjectionService {
   private final JProjectionRepository jProjectionRepository;
   private final JProjectionMapper jProjectionMapper;
 
+  @Transactional(readOnly = true)
   public List<Projection> findAll() {
     return jProjectionRepository.findAll().stream().map(jProjectionMapper::toDomain).toList();
   }

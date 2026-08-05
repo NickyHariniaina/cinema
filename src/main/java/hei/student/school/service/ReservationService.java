@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -19,10 +20,12 @@ public class ReservationService {
   private final JReservationRepository jReservationRepository;
   private final JReservationMapper jReservationMapper;
 
+  @Transactional(readOnly = true)
   public List<Reservation> findAll() {
     return jReservationRepository.findAll().stream().map(jReservationMapper::toDomain).toList();
   }
 
+  @Transactional(readOnly = true)
   public Reservation findById(UUID id) {
     var reservation =
         jReservationRepository
