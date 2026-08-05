@@ -3,8 +3,7 @@ package hei.student.school.model;
 import lombok.Getter;
 
 public class UserWithToken extends User {
-  @Getter
-  private final String token;
+  @Getter private final String token;
 
   public UserWithToken(String token) {
     this.token = token;

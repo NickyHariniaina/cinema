@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class InternalToRestExceptionHandler {
   @ExceptionHandler(NoSuchElementException.class)
-  public ResponseEntity<Map<String, String>> handleNoSuchElementException(NoSuchElementException e) {
+  public ResponseEntity<Map<String, String>> handleNoSuchElementException(
+      NoSuchElementException e) {
     return new ResponseEntity<>(toRest(e, NOT_FOUND), NOT_FOUND);
   }
 
@@ -40,7 +41,6 @@ public class InternalToRestExceptionHandler {
   private static Map<String, String> toRest(Exception exception, HttpStatus status) {
     return Map.of(
         "message", exception.getMessage(),
-        "type", status.toString()
-    );
+        "type", status.toString());
   }
 }

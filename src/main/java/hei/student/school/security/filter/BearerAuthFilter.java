@@ -1,5 +1,7 @@
 package hei.student.school.security.filter;
 
+import hei.student.school.security.jwt.JwtService;
+import hei.student.school.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,8 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import hei.student.school.security.jwt.JwtService;
-import hei.student.school.service.UserService;
 
 @Component
 @AllArgsConstructor
@@ -38,8 +38,9 @@ public class BearerAuthFilter extends OncePerRequestFilter {
           var principal = userService.loadUserByUsername(username);
 
           if (jwtService.isValid(token, username)) {
-            var authentication = new UsernamePasswordAuthenticationToken(
-                principal, null, principal.getAuthorities());
+            var authentication =
+                new UsernamePasswordAuthenticationToken(
+                    principal, null, principal.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
           }

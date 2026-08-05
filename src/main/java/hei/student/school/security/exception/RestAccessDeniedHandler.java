@@ -21,9 +21,12 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
       throws IOException {
     response.setStatus(FORBIDDEN.value());
     response.setContentType("application/json");
-    response.getWriter().write(mapper.writeValueAsString(Map.of(
-        "message", e.getMessage(),
-        "type", FORBIDDEN.toString()
-    )));
+    response
+        .getWriter()
+        .write(
+            mapper.writeValueAsString(
+                Map.of(
+                    "message", e.getMessage(),
+                    "type", FORBIDDEN.toString())));
   }
 }

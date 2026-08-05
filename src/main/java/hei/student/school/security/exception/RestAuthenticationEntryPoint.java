@@ -21,9 +21,12 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
       throws IOException {
     response.setStatus(UNAUTHORIZED.value());
     response.setContentType("application/json");
-    response.getWriter().write(mapper.writeValueAsString(Map.of(
-        "message", e.getMessage(),
-        "type", UNAUTHORIZED.toString()
-    )));
+    response
+        .getWriter()
+        .write(
+            mapper.writeValueAsString(
+                Map.of(
+                    "message", e.getMessage(),
+                    "type", UNAUTHORIZED.toString())));
   }
 }

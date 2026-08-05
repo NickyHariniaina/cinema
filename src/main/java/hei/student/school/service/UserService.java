@@ -28,7 +28,8 @@ public class UserService implements UserDetailsService {
   private final JwtService jwtService;
 
   private User getByEmail(String email) {
-    return jUserRepository.findByEmail(email)
+    return jUserRepository
+        .findByEmail(email)
         .map(jUserMapper::toDomain)
         .orElseThrow(() -> new NoSuchElementException("User not found"));
   }

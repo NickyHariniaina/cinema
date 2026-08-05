@@ -16,8 +16,10 @@ public class User {
   private String lastName;
   private LocalDate birthdate;
   private String email;
+
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
+
   private String phone;
   private UserRole role;
 }
