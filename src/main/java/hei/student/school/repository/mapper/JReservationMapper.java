@@ -19,7 +19,8 @@ public class JReservationMapper {
     reservation.setId(entity.getId());
     reservation.setCreatedAt(entity.getCreatedAt());
     reservation.setStatus(entity.getStatus());
-    reservation.setClient(entity.getClient() == null ? null : userMapper.toDomain(entity.getClient()));
+    reservation.setClient(
+        entity.getClient() == null ? null : userMapper.toDomain(entity.getClient()));
     reservation.setProjection(
         entity.getProjection() == null ? null : projectionMapper.toDomain(entity.getProjection()));
     reservation.setSeats(

@@ -20,16 +20,15 @@ public class ReservationService {
   private final JReservationMapper jReservationMapper;
 
   public List<Reservation> findAll() {
-    return jReservationRepository.findAll().stream()
-        .map(jReservationMapper::toDomain)
-        .toList();
+    return jReservationRepository.findAll().stream().map(jReservationMapper::toDomain).toList();
   }
 
   public Reservation findById(UUID id) {
     var reservation =
         jReservationRepository
             .findById(id)
-            .orElseThrow(() -> new NoSuchElementException("Reservation with id " + id + " not found"));
+            .orElseThrow(
+                () -> new NoSuchElementException("Reservation with id " + id + " not found"));
 
     assertCanView(reservation.getClient() == null ? null : reservation.getClient().getId());
     return jReservationMapper.toDomain(reservation);
@@ -37,16 +36,14 @@ public class ReservationService {
 
   private void assertCanView(UUID reservationClientId) {
     var authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null
-        || !(authentication.getPrincipal() instanceof Principal principal)) {
+    if (authentication == null || !(authentication.getPrincipal() instanceof Principal principal)) {
       throw new AccessDeniedException("Authentication required");
     }
 
     var currentUser = principal.user();
     if (currentUser.getRole() == UserRole.CLIENT
         && (reservationClientId == null || !reservationClientId.equals(currentUser.getId()))) {
-      throw new AccessDeniedException(
-          "A CLIENT can only view its own reservations");
+      throw new AccessDeniedException("A CLIENT can only view its own reservations");
     }
   }
 }

@@ -14,8 +14,6 @@ public class ProjectionService {
   private final JProjectionMapper jProjectionMapper;
 
   public List<Projection> findAll() {
-    return jProjectionRepository.findAll().stream()
-        .map(jProjectionMapper::toDomain)
-        .toList();
+    return jProjectionRepository.findAll().stream().map(jProjectionMapper::toDomain).toList();
   }
 }
