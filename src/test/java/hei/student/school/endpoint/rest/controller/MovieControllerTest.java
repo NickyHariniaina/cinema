@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hei.student.school.model.Genre;
 import hei.student.school.model.Movie;
 import hei.student.school.model.MovieRequest;
+import hei.student.school.security.jwt.JwtService;
 import hei.student.school.service.MovieService;
+import hei.student.school.service.UserService;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +35,8 @@ class MovieControllerTest {
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
   @MockBean MovieService movieService;
+  @MockBean UserService userService;
+  @MockBean JwtService jwtService;
 
   @Test
   void get_movies_returns_200_with_all_movies() throws Exception {

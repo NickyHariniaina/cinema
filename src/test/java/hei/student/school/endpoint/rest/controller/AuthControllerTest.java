@@ -11,6 +11,7 @@ import hei.student.school.model.AuthPayload;
 import hei.student.school.model.User;
 import hei.student.school.model.UserRole;
 import hei.student.school.model.UserWithToken;
+import hei.student.school.security.jwt.JwtService;
 import hei.student.school.service.UserService;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,7 @@ class AuthControllerTest {
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
   @MockBean UserService userService;
+  @MockBean JwtService jwtService;
 
   @Test
   void register_returns_201_with_token() throws Exception {
