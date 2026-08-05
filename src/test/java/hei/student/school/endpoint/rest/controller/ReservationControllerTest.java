@@ -3,9 +3,11 @@ package hei.student.school.endpoint.rest.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import hei.student.school.model.CreateReservationRequest;
 import hei.student.school.model.Reservation;
 import hei.student.school.model.ReservationStatus;
 import hei.student.school.security.jwt.JwtService;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -75,6 +78,61 @@ class ReservationControllerTest {
 
     mockMvc
         .perform(get(RESERVATIONS_URL + "/{id}", UUID.randomUUID()))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.type").value("403 FORBIDDEN"));
+  }
+
+  @Test
+  void put_reservations_returns_200_with_created_reservation() throws Exception {
+    var created = reservation();
+    when(reservationService.create(any(CreateReservationRequest.class))).thenReturn(created);
+
+    mockMvc
+        .perform(
+            put(RESERVATIONS_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {"projectionId":"%s","seatIds":["%s","%s"]}
+                    """
+                        .formatted(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("PENDING"));
+  }
+
+  @Test
+  void put_reservations_returns_400_when_invalid_request() throws Exception {
+    when(reservationService.create(any(CreateReservationRequest.class)))
+        .thenThrow(
+            new IllegalArgumentException("Seat(s) [" + UUID.randomUUID() + "] already reserved"));
+
+    mockMvc
+        .perform(
+            put(RESERVATIONS_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {"projectionId":"%s","seatIds":["%s"]}
+                    """
+                        .formatted(UUID.randomUUID(), UUID.randomUUID())))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.type").value("400 BAD_REQUEST"));
+  }
+
+  @Test
+  void put_reservations_returns_403_when_access_denied() throws Exception {
+    when(reservationService.create(any(CreateReservationRequest.class)))
+        .thenThrow(new AccessDeniedException("Authentication required"));
+
+    mockMvc
+        .perform(
+            put(RESERVATIONS_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {"projectionId":"%s","seatIds":["%s"]}
+                    """
+                        .formatted(UUID.randomUUID(), UUID.randomUUID())))
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.type").value("403 FORBIDDEN"));
   }

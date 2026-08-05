@@ -2,6 +2,7 @@ package hei.student.school.endpoint.rest.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import hei.student.school.model.CreateReservationRequest;
 import hei.student.school.model.Reservation;
 import hei.student.school.service.ReservationService;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +24,11 @@ public class ReservationController {
   @GetMapping("/reservations")
   public List<Reservation> listReservations() {
     return service.findAll();
+  }
+
+  @PutMapping("/reservations")
+  public Reservation createReservation(@RequestBody CreateReservationRequest request) {
+    return service.create(request);
   }
 
   @GetMapping("/reservations/{id}")
