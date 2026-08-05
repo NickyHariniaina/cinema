@@ -5,6 +5,8 @@ import hei.student.school.model.MovieRequest;
 import hei.student.school.repository.JMovieRepository;
 import hei.student.school.repository.mapper.JMovieMapper;
 import hei.student.school.service.validator.UpsertMovieValidator;
+import java.util.Comparator;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,13 @@ public class MovieService {
   private final JMovieRepository jMovieRepository;
   private final JMovieMapper jMovieMapper;
   private final UpsertMovieValidator upsertMovieValidator;
+
+  public List<Movie> findAll() {
+    return jMovieRepository.findAll().stream()
+        .map(jMovieMapper::toDomain)
+        .sorted(Comparator.comparing(Movie::getTitle))
+        .toList();
+  }
 
   public Movie save(MovieRequest request) {
     upsertMovieValidator.accept(request);
