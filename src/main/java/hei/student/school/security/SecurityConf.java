@@ -1,6 +1,7 @@
 package hei.student.school.security;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import hei.student.school.security.exception.RestAccessDeniedHandler;
@@ -41,6 +42,8 @@ public class SecurityConf {
                 auth.requestMatchers("/register", "/login")
                     .anonymous()
                     .requestMatchers("/movies", "/movies/**")
+                    .hasRole("MANAGER")
+                    .requestMatchers(PUT, "/projections", "/projections/**")
                     .hasRole("MANAGER")
                     .requestMatchers(GET, "/reservations")
                     .hasAnyRole("MANAGER", "EMPLOYEE")
