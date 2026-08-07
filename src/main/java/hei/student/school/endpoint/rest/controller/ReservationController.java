@@ -1,6 +1,5 @@
 package hei.student.school.endpoint.rest.controller;
 
-
 import hei.student.school.model.CreateReservationRequest;
 import hei.student.school.model.Reservation;
 import hei.student.school.service.ReservationService;

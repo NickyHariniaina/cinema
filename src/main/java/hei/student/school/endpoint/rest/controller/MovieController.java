@@ -1,6 +1,5 @@
 package hei.student.school.endpoint.rest.controller;
 
-
 import hei.student.school.model.Movie;
 import hei.student.school.model.MovieRequest;
 import hei.student.school.service.MovieService;

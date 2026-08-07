@@ -1,6 +1,5 @@
 package hei.student.school.endpoint.rest.controller;
 
-
 import hei.student.school.model.Projection;
 import hei.student.school.model.ProjectionRequest;
 import hei.student.school.service.ProjectionService;
