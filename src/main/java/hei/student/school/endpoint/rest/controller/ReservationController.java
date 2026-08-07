@@ -1,6 +1,5 @@
 package hei.student.school.endpoint.rest.controller;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import hei.student.school.model.CreateReservationRequest;
 import hei.student.school.model.Reservation;
