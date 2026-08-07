@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(produces = APPLICATION_JSON_VALUE)
+@RequestMapping()
 public class ReservationController {
   private final ReservationService service;
 

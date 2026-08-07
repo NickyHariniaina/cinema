@@ -32,17 +32,16 @@ public class ReservationService {
   private final JUserRepository jUserRepository;
   private final JProjectionRepository jProjectionRepository;
   private final JSeatRepository jSeatRepository;
-  private final JReservationMapper jReservationMapper;
-  private final CreateReservationValidator createReservationValidator;
+  private final JReservationMapper mapper;
+  private final CreateReservationValidator validator;
 
-  @Transactional(readOnly = true)
   public List<Reservation> findAll() {
-    return jReservationRepository.findAll().stream().map(jReservationMapper::toDomain).toList();
+    return jReservationRepository.findAll().stream().map(mapper::toDomain).toList();
   }
 
   @Transactional
   public Reservation create(CreateReservationRequest request) {
-    createReservationValidator.accept(request);
+    validator.accept(request);
 
     var authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !(authentication.getPrincipal() instanceof Principal principal)) {
@@ -77,7 +76,7 @@ public class ReservationService {
     reservation.setProjection(projection);
     reservation.setSeats(new HashSet<>(seats));
 
-    return jReservationMapper.toDomain(jReservationRepository.save(reservation));
+    return mapper.toDomain(jReservationRepository.save(reservation));
   }
 
   private void assertSeatsAvailable(UUID projectionId, List<UUID> requestedSeatIds) {
@@ -104,7 +103,7 @@ public class ReservationService {
                 () -> new NoSuchElementException("Reservation with id " + id + " not found"));
 
     assertCanView(reservation.getClient() == null ? null : reservation.getClient().getId());
-    return jReservationMapper.toDomain(reservation);
+    return mapper.toDomain(reservation);
   }
 
   private void assertCanView(UUID reservationClientId) {

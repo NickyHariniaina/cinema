@@ -14,18 +14,18 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MovieService {
   private final JMovieRepository repository;
-  private final JMovieMapper jMovieMapper;
-  private final UpsertMovieValidator upsertMovieValidator;
+  private final JMovieMapper mapper;
+  private final UpsertMovieValidator validator;
 
   public List<Movie> findAll() {
     return repository.findAll().stream()
-        .map(jMovieMapper::toDomain)
+        .map(mapper::toDomain)
         .sorted(Comparator.comparing(Movie::getTitle))
         .toList();
   }
 
   public Movie save(MovieRequest request) {
-    upsertMovieValidator.accept(request);
+    validator.accept(request);
 
     var existing = repository.findByTitle(request.title()).orElse(null);
     var movie = new Movie();
@@ -37,6 +37,6 @@ public class MovieService {
     movie.setDescription(request.description());
     movie.setDuration(request.duration());
 
-    return jMovieMapper.toDomain(repository.save(jMovieMapper.toEntity(movie)));
+    return mapper.toDomain(repository.save(mapper.toEntity(movie)));
   }
 }

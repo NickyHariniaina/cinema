@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(produces = APPLICATION_JSON_VALUE)
+@RequestMapping
 public class ProjectionController {
   private final ProjectionService service;
 
