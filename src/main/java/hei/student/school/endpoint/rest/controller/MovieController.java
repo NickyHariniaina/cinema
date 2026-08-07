@@ -1,7 +1,5 @@
 package hei.student.school.endpoint.rest.controller;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import hei.student.school.model.Movie;
 import hei.student.school.model.MovieRequest;
 import hei.student.school.service.MovieService;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(produces = APPLICATION_JSON_VALUE)
+@RequestMapping
 public class MovieController {
   private final MovieService service;
 

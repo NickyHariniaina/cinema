@@ -19,17 +19,16 @@ public class ProjectionService {
   private final JProjectionRepository jProjectionRepository;
   private final JMovieRepository jMovieRepository;
   private final JRoomRepository jRoomRepository;
-  private final JProjectionMapper jProjectionMapper;
-  private final CreateProjectionValidator createProjectionValidator;
+  private final JProjectionMapper mapper;
+  private final CreateProjectionValidator validator;
 
-  @Transactional(readOnly = true)
   public List<Projection> findAll() {
-    return jProjectionRepository.findAll().stream().map(jProjectionMapper::toDomain).toList();
+    return jProjectionRepository.findAll().stream().map(mapper::toDomain).toList();
   }
 
   @Transactional
   public Projection create(ProjectionRequest request) {
-    createProjectionValidator.accept(request);
+    validator.accept(request);
 
     var movie =
         jMovieRepository
@@ -47,6 +46,6 @@ public class ProjectionService {
                         "Room with id " + request.roomId() + " not found"));
 
     var projection = new JProjection(null, movie, room, request.datetime(), request.seatPrice());
-    return jProjectionMapper.toDomain(jProjectionRepository.save(projection));
+    return mapper.toDomain(jProjectionRepository.save(projection));
   }
 }

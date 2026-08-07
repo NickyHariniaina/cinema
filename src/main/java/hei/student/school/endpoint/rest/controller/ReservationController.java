@@ -1,7 +1,5 @@
 package hei.student.school.endpoint.rest.controller;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import hei.student.school.model.CreateReservationRequest;
 import hei.student.school.model.Reservation;
 import hei.student.school.service.ReservationService;
@@ -17,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(produces = APPLICATION_JSON_VALUE)
+@RequestMapping()
 public class ReservationController {
   private final ReservationService service;
 
